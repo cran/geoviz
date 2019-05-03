@@ -1,10 +1,11 @@
 Package: geoviz
 Type: Package
 Title: Elevation and GPS Data Visualisation
-Version: 0.2.0
+Version: 0.2.1
 Author: Neil Charles
 Maintainer: Neil Charles <neil.d.charles@gmail.com>
 Description: Simpler processing of digital elevation model and GPS trace data for use with the 'rayshader' package.
+URL: https://github.com/neilcharles/geoviz/
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
@@ -16,6 +17,6 @@ Imports: dplyr, magrittr, tidyr, readr, tibble, purrr, stringr, raster,
 Suggests: testthat, knitr, rmarkdown
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2019-04-04 19:33:17 UTC; Neil.Charles
+Packaged: 2019-05-03 08:12:01 UTC; Neil.Charles
 Repository: CRAN
-Date/Publication: 2019-04-05 11:12:46 UTC
+Date/Publication: 2019-05-03 08:30:05 UTC

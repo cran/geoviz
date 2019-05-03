@@ -3,26 +3,39 @@
 # Geoviz
 
 Helper functions to draw ['rayshader'](https://github.com/tylermorganwall/rayshader) scenes.
-- From UK OS Terrain 50, NASA ASTER, EU Copernicus or any other DEM (Digital Elevation Model) data
-- With elevation shading (green valleys and snow capped peaks, or anything else you want)
+- Using elevation data from 'Mapzen' and 'Mapbox' 
 - With map and satellite overlays
 - Blending between different overlays at different altitudes
 - with added  GPS tracks
+- From EU Copernicus, NASA ASTER or any other DEM (Digital Elevation Model) data
+- With elevation shading (green valleys and snow capped peaks, or anything else you want)
 
 ['Rayshader'](https://github.com/tylermorganwall/rayshader) is an awesome bit of kit! I'm just doing some colouring in.
 
 ### Installing
 
+geoviz is on CRAN:
+
+```R
+install.packages("geoviz")
+```
+
+Or for the latest development version:
+
 ```R
 devtools::install_github("neilcharles/geoviz")
 ```
+
+Read [news](news.md) to understand the latest updates and bug fixes.
 
 Geoviz helps you to draw images like these.
 
 ![](man/figures/bw_example.jpg)
 
-![](man/figures/stamen_example.jpg)
+![](man/figures/ullswater.jpg)
 
+
+![](vignettes/figures/hawaii.jpg)
 
 ### Example
 
@@ -42,7 +55,7 @@ sunangle = 270
 
 zscale = 25
 
-#Get a Stamen map using ggmap that will cover our DEM
+#Get a Stamen map that will cover our DEM
 
 stamen_overlay <- slippy_overlay(DEM, image_source = "stamen", image_type = "watercolor", png_opacity = 0.3)
 
@@ -77,7 +90,7 @@ rayshader::plot_3d(
 )
 ```
 
-![](man/figures/example1.png)
+![](man/figures/example1.jpg)
 
 
 ```R
@@ -99,11 +112,11 @@ add_gps_to_rayshader(
 
 ```
 
-![](man/figures/example2.png)
+![](man/figures/example2.jpg)
 
 ### Quick access to digital elevation model data
 
-To draw scenes using high resolution DEM's, you'll need to download your own data (see below), but geoviz also has a helpful function to obtain 50m resolution DEM data from [Mapbox](https://docs.mapbox.com/help/troubleshooting/access-elevation-data/). Small areas drawn using this data won't look great, but for larger areas (> 10 square km), it's a fast way to get started.
+To draw scenes using sub 2m resolution DEM's, you'll need to download your own data (see below), but geoviz also has helpful functions to obtain DEM data from [Mapbox](https://docs.mapbox.com/help/troubleshooting/access-elevation-data/) and [Mapzen](https://www.mapzen.com/). Mapzen doesn't require an API key and gives access to higher resolution data, depending on where in the world you request.
 
 ```R
 
@@ -117,7 +130,12 @@ long <- -3.1767946
 square_km <- 20
 
 #Get elevation data from Mapbox
-dem <- mapbox_dem(lat, long, square_km, mapbox_key)
+dem <- mapbox_dem(lat, long, square_km, api_key = mapbox_key)
+
+#Note: You can get elevation data from Mapzen instead, which doesn't require an API key.
+#You'll still need an API key for any mapbox image overlays.
+#Get a DEM from mapzen with:
+#dem <- mapzen_dem(lat, long, square_km)
 
 #Get an overlay image (Stamen for this example because it doesn't need an API key)
 overlay_image <-
@@ -152,7 +170,7 @@ rayshader::plot_3d(
 )
 ```
 
-![](man/figures/example3.png)
+![](man/figures/example3.jpg)
 
 ```R
 # You can also visualise your data in ggplot2 rather than 'rayshader'.

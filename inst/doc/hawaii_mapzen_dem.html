@@ -14,7 +14,7 @@
 
 <meta name="date" content="2019-05-03" />
 
-<title>Scene With GPS trace</title>
+<title>Hawaii Elevation and Bathymetry Using Mapzen</title>
 
 
 
@@ -93,77 +93,84 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 
 
-<h1 class="title toc-ignore">Scene With GPS trace</h1>
+<h1 class="title toc-ignore">Hawaii Elevation and Bathymetry Using ‘Mapzen’</h1>
 <h4 class="author">Neil Charles</h4>
 <h4 class="date">2019-05-03</h4>
 
 
 
-<p>Use geoviz to draw a small ‘rayshader’ scene and add a GPS track to it</p>
+<p>Get elevation and bathymetry data for Hawaii from ‘mapzen’, add a ‘stamen’ overlay and render the scene.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(geoviz)
 <span class="kw">library</span>(rayshader)
 
-<span class="co">#Load an example IGC (GPS track log) file</span>
+<span class="co"># Coordinates for Hawaii</span>
+lat =<span class="st"> </span><span class="fl">19.593335</span>
+lon =<span class="st"> </span><span class="op">-</span><span class="fl">155.4880287</span>
+square_km =<span class="st"> </span><span class="dv">50</span>
 
-igc &lt;-<span class="st"> </span><span class="kw">example_igc</span>()
+<span class="co"># Set max tiles to request from 'mapzen' and 'stamen'.</span>
+<span class="co"># Increase this for a higher resolution image.</span>
+max_tiles =<span class="st"> </span><span class="dv">10</span>
 
-<span class="co">#Load a small example elevation raster showing a piece of the English Lake district</span>
-<span class="co">#You can use mapbox_dem() to obtain a 50m resolution digital elevation model</span>
-<span class="co">#of any location but will need your own mapbox key</span>
+<span class="co"># Get elevation data. Increase max_tiles for a higher resolution image.</span>
+<span class="co"># Set max_tiles = 40 to reproduce the example above.</span>
+dem &lt;-<span class="st"> </span><span class="kw">mapzen_dem</span>(lat, lon, square_km, <span class="dt">max_tiles =</span> max_tiles)
 
-DEM &lt;-<span class="st"> </span><span class="kw">example_raster</span>()
+<span class="co"># Get a stamen overlay (or a satellite overlay etc. by changing image_source)</span>
+overlay_image &lt;-
+<span class="st">  </span><span class="kw">slippy_overlay</span>(dem,
+                 <span class="dt">image_source =</span> <span class="st">&quot;stamen&quot;</span>,
+                 <span class="dt">image_type =</span> <span class="st">&quot;watercolor&quot;</span>,
+                 <span class="dt">png_opacity =</span> <span class="fl">0.3</span>,
+                 <span class="dt">max_tiles =</span> max_tiles)
 
-sunangle =<span class="st"> </span><span class="dv">270</span>
-
-zscale =<span class="st"> </span><span class="dv">25</span>
-
-<span class="co">#Get a Stamen map using ggmap that will cover our DEM</span>
-
-stamen_overlay &lt;-<span class="st"> </span><span class="kw">slippy_overlay</span>(DEM, <span class="dt">image_source =</span> <span class="st">&quot;stamen&quot;</span>, <span class="dt">image_type =</span> <span class="st">&quot;watercolor&quot;</span>, <span class="dt">png_opacity =</span> <span class="fl">0.3</span>)
-
-<span class="co">#Make an elevation shading layer with dark valleys and light peaks (not essential but I like it!)</span>
-
-elevation_overlay &lt;-<span class="st"> </span><span class="kw">elevation_shade</span>(DEM, <span class="dt">elevation_palette =</span> <span class="kw">c</span>(<span class="st">&quot;#000000&quot;</span>, <span class="st">&quot;#FFFFFF&quot;</span>), <span class="dt">png_opacity =</span> <span class="fl">0.6</span>)
-
-
-<span class="co">#Calculate the 'rayshader' scene (see 'rayshader' documentation)</span>
+<span class="co"># Render the 'rayshader' scene.</span>
 
 elmat =<span class="st"> </span><span class="kw">matrix</span>(
-  raster<span class="op">::</span><span class="kw">extract</span>(DEM, raster<span class="op">::</span><span class="kw">extent</span>(DEM), <span class="dt">method =</span> <span class="st">'bilinear'</span>),
-  <span class="dt">nrow =</span> <span class="kw">ncol</span>(DEM),
-  <span class="dt">ncol =</span> <span class="kw">nrow</span>(DEM)
+  raster<span class="op">::</span><span class="kw">extract</span>(dem, raster<span class="op">::</span><span class="kw">extent</span>(dem), <span class="dt">method =</span> <span class="st">'bilinear'</span>),
+  <span class="dt">nrow =</span> <span class="kw">ncol</span>(dem),
+  <span class="dt">ncol =</span> <span class="kw">nrow</span>(dem)
 )
 
 scene &lt;-<span class="st"> </span>elmat <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">sphere_shade</span>(<span class="dt">sunangle =</span> sunangle, <span class="dt">texture =</span> <span class="st">&quot;bw&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">add_overlay</span>(elevation_overlay) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">add_overlay</span>(stamen_overlay)
+<span class="st">  </span><span class="kw">sphere_shade</span>(<span class="dt">sunangle =</span> <span class="dv">270</span>, <span class="dt">texture =</span> <span class="st">&quot;bw&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">add_overlay</span>(overlay_image)  <span class="co"># %&gt;% </span>
 
+<span class="co">#  For a slower but higher quality render with more realistic shadows (see 'rayshader' documentation)</span>
+<span class="co">#  add_shadow(</span>
+<span class="co">#    ray_shade(</span>
+<span class="co">#      elmat,</span>
+<span class="co">#      anglebreaks = seq(30, 60),</span>
+<span class="co">#      sunangle = 270,</span>
+<span class="co">#      multicore = TRUE,</span>
+<span class="co">#      lambert = FALSE,</span>
+<span class="co">#      remove_edges = FALSE</span>
+<span class="co">#    )</span>
+<span class="co">#  ) %&gt;%</span>
+<span class="co">#  add_shadow(ambient_shade(elmat, multicore = TRUE, remove_edges = FALSE))</span>
 
-<span class="co">#Render the 'rayshader' scene</span>
 
 rayshader<span class="op">::</span><span class="kw">plot_3d</span>(
   scene,
   elmat,
-  <span class="dt">zscale =</span> zscale,
-  <span class="dt">solid =</span> <span class="ot">FALSE</span>,
-  <span class="dt">shadow =</span> <span class="ot">TRUE</span>,
-  <span class="dt">shadowdepth =</span> <span class="op">-</span><span class="dv">100</span>
+  <span class="dt">zscale =</span> <span class="kw">raster_zscale</span>(dem) <span class="op">/</span><span class="st"> </span><span class="dv">3</span>,  <span class="co">#exaggerate elevation by 3x </span>
+  <span class="dt">solid =</span> <span class="ot">TRUE</span>,
+  <span class="dt">shadow =</span> <span class="ot">FALSE</span>,
+  <span class="dt">soliddepth =</span> <span class="op">-</span><span class="kw">raster_zscale</span>(dem),
+  <span class="dt">water=</span><span class="ot">TRUE</span>,
+  <span class="dt">waterdepth =</span> <span class="dv">0</span>,
+  <span class="dt">wateralpha =</span> <span class="fl">0.5</span>,
+  <span class="dt">watercolor =</span> <span class="st">&quot;lightblue&quot;</span>,
+  <span class="dt">waterlinecolor =</span> <span class="st">&quot;white&quot;</span>,
+  <span class="dt">waterlinealpha =</span> <span class="fl">0.5</span>
 )
 
-<span class="co">#Add the gps track</span>
+rgl<span class="op">::</span><span class="kw">view3d</span>(<span class="dt">theta =</span><span class="dv">290</span>, <span class="dt">phi =</span> <span class="dv">18</span>, <span class="dt">zoom =</span> <span class="fl">0.5</span>, <span class="dt">fov =</span> <span class="dv">5</span>)
 
-<span class="kw">add_gps_to_rayshader</span>(
-  DEM,
-  igc<span class="op">$</span>lat,
-  igc<span class="op">$</span>long,
-  igc<span class="op">$</span>altitude,
-  <span class="dt">line_width =</span> <span class="fl">1.5</span>,
-  <span class="dt">lightsaber =</span> <span class="ot">TRUE</span>,
-  <span class="dt">colour =</span> <span class="st">&quot;red&quot;</span>,
-  <span class="dt">zscale =</span> zscale,
-  <span class="dt">ground_shadow =</span> <span class="ot">TRUE</span>
-)
+<span class="co">#rayshader::render_depth(</span>
+<span class="co">#  focus = 0.3,</span>
+<span class="co">#  fstop = 18,</span>
+<span class="co">#  filename = &quot;LIDAR.png&quot;)</span>
 </code></pre></div>
 
 

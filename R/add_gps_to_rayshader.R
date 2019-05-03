@@ -23,7 +23,7 @@
 #'   flight$lat,
 #'   flight$long,
 #'   flight$altitude,
-#'   zscale = raster_zscale(example_raster()))
+#'   zscale = 25)
 #'
 #' @export
 add_gps_to_rayshader <- function(raster_input, lat, long, alt, zscale, line_width = 1, colour = "red", alpha = 0.8, lightsaber = TRUE, clamp_to_ground = FALSE, raise_agl = 0, ground_shadow = FALSE, as_line = TRUE, point_size = 20){
@@ -37,7 +37,7 @@ add_gps_to_rayshader <- function(raster_input, lat, long, alt, zscale, line_widt
 
   if (clamp_to_ground | ground_shadow) {
 
-    sp_gps <- sp::SpatialPoints(cbind(long, lat), proj4string = sp::CRS('+init=EPSG:4326'))
+    sp_gps <- sp::SpatialPoints(cbind(long, lat), proj4string = sp::CRS('+init=epsg:4326'))
 
     sp_gps <- sp::spTransform(sp_gps, sp::CRS(as.character(raster::crs(raster_input))))
 
