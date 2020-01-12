@@ -5,9 +5,15 @@
 \title{Stitches together files into a single raster
 Requires a target directory of files that can be read with raster::raster(), e.g. .asc files, or a directory of .zip files containing these files}
 \usage{
-mosaic_files(path, extract_zip = FALSE, file_match = ".*.asc",
-  zip_file_match = ".*.zip", raster_output_file = "mosaic_out.raster",
-  file_crs = NULL, raster_todisk = FALSE)
+mosaic_files(
+  path,
+  extract_zip = FALSE,
+  file_match = ".*.asc",
+  zip_file_match = ".*.zip",
+  raster_output_file = "mosaic_out.raster",
+  file_crs = NULL,
+  raster_todisk = FALSE
+)
 }
 \arguments{
 \item{path}{path to files that are to be stitched together}
@@ -37,7 +43,11 @@ Requires a target directory of files that can be read with raster::raster(), e.g
 
 path_to_files <- system.file("extdata/example_asc", package = "geoviz")
 
-mosaic_files(path_to_files, extract_zip = TRUE, file_crs = "+init=epsg:27700")
+path_to_output <- tempdir()
 
-raster_mosaic <- raster::raster("mosaic_out.gri")
+mosaic_files(path_to_files,
+             raster_output_file = paste0(path_to_output, '/mosaic_out.raster', sep = ''),
+             extract_zip = TRUE, file_crs = "+init=epsg:27700")
+
+raster_mosaic <- raster::raster(paste0(path_to_output, '/mosaic_out.gri', sep = ''))
 }

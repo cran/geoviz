@@ -1,5 +1,7 @@
 [![lifecycle](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
 [![CRAN status](https://www.r-pkg.org/badges/version/geoviz)](https://cran.r-project.org/package=geoviz)
+
+[![Travis build status](https://travis-ci.org/neilcharles/geoviz.svg?branch=master)](https://travis-ci.org/neilcharles/geoviz)
 # Geoviz
 
 Helper functions to draw ['rayshader'](https://github.com/tylermorganwall/rayshader) scenes.
@@ -26,7 +28,7 @@ Or for the latest development version:
 devtools::install_github("neilcharles/geoviz")
 ```
 
-Read [news](news.md) to understand the latest updates and bug fixes.
+Read [news](https://github.com/neilcharles/geoviz/blob/master/news.md) to understand the latest updates and bug fixes.
 
 Geoviz helps you to draw images like these.
 
